@@ -15,10 +15,10 @@ services:
       - production_postgres_data:/var/lib/postgresql/data:Z
     env_file:
       - ./.envs/.production/.postgres
-    networks:
-      - back
-    # labels:
-    #   - traefik.enable=false
+    # networks:
+    #   - back
+    labels:
+      - traefik.enable=false
 
   django: #&django
     build:
@@ -39,9 +39,9 @@ services:
     depends_on:
       - postgres
       #- redis
-    networks:
-      - front
-      - back
+    # networks:
+    #   - front
+    #   - back
     command: /start
 
   # redis:
@@ -91,11 +91,11 @@ services:
   #     - "traefik.http.routers.flower.priority=2"
   #   command: /start-flower
 
-networks:
-  front:
-    external:
-      name: front
-  back:
-    external: false
-    name: back
+# networks:
+#   front:
+#     external:
+#       name: front
+#   back:
+#     external: false
+#       name: back
     
