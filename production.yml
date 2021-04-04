@@ -86,11 +86,12 @@ services:
       - back
     labels:
       - traefik.http.routers.flower.rule=Host(`parts.luidorbus.ru`)
-      - traefik.http.services.flower.loadbalancer.server.port=5555
+      # - traefik.http.services.flower.loadbalancer.server.port=5555
       - traefik.http.routers.flower.tls=true
       - traefik.http.routers.flower.tls.certresolver=letsencrypt
       # - "traefik.http.routers.flower.entryPoints=web-secure"
-      # - traefik.port=5555
+      - traefik.port=5555
+      - "traefik.http.routers.flower.priority=20"
     command: /start-flower
 
 networks:
