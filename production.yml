@@ -84,7 +84,9 @@ services:
       - front
       - back
     labels:
+
       - traefik.http.routers.flower.rule=Host(`parts.luidorbus.ru`)
+      - "traefik.http.routers.django.entryPoints=parts-flower"
       - traefik.http.services.flower.loadbalancer.server.port=5555
       - traefik.http.routers.flower.tls=true
       - traefik.http.routers.flower.tls.certresolver=letsencrypt
