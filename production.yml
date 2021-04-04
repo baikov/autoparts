@@ -43,6 +43,7 @@ services:
       - "traefik.http.routers.django.tls.certresolver=letsencrypt"
       - "traefik.http.routers.django.entryPoints=web-secure"
       - "traefik.http.routers.django.middlewares=csrf"
+      - "traefik.http.services.django.loadBalancer.servers.url=http://django:5000"
 
   # redis:
   #   image: redis:5.0
