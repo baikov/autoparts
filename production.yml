@@ -80,8 +80,6 @@ services:
     <<: *django
     image: parts_production_flower
     container_name: flower
-    # ports:
-    #   - "5555:5555"
     networks:
       - front
       - back
@@ -90,7 +88,7 @@ services:
       - traefik.http.services.flower.loadbalancer.server.port=5555
       - traefik.http.routers.flower.tls=true
       - traefik.http.routers.flower.tls.certresolver=letsencrypt
-      # - "traefik.http.routers.flower.entryPoints=web-secure"
+      - "traefik.http.routers.flower.entryPoints=flower"
       # - traefik.port=5555
       - "traefik.http.routers.flower.priority=2"
     command: /start-flower
