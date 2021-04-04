@@ -44,7 +44,7 @@ services:
       - "traefik.http.routers.django.tls=true"
       - "traefik.http.routers.django.tls.certresolver=letsencrypt"
       - "traefik.http.routers.django.entryPoints=web-secure"
-      - "traefik.http.routers.django.middlewares=csrf@file"
+      # - "traefik.http.routers.django.middlewares=csrf@file"
       - "traefik.http.services.django.loadbalancer.server.port=5000"
       # - "traefik.http.services.django.loadBalancer.servers.url=http://django:5000"
 
