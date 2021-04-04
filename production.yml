@@ -89,8 +89,8 @@ services:
       - "traefik.http.services.flower.loadbalancer.server.port=5555"
       - "traefik.http.routers.flower.tls=true"
       - "traefik.http.routers.flower.tls.certresolver=letsencrypt"
-    # expose:
-    #   - 5555
+    expose:
+      - 5555
     depends_on:
       - celeryworker
     command: /start-flower
