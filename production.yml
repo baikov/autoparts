@@ -29,15 +29,6 @@ services:
     env_file:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
-    labels:
-      # - traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`)
-      - "traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`)"
-      # - traefik.http.services.flower.loadbalancer.server.port=5000
-      - traefik.http.routers.django.tls=true
-      - traefik.http.routers.django.tls.certresolver=letsencrypt
-      # - traefik.http.routers.django.priority=20
-      - traefik.http.routers.django.entryPoints=web-secure
-      - traefik.http.routers.django.middlewares=csrf
     depends_on:
       - postgres
       #- redis
@@ -45,6 +36,13 @@ services:
       - front
       - back
     command: /start
+    labels:
+      # - "traefik.http.routers.flask.rule=Host(`parts.luidorbus.ru`) && PathPrefix(`/flask`)"
+      - "traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`)"
+      - "traefik.http.routers.django.tls=true"
+      - "traefik.http.routers.django.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.django.entryPoints=web-secure"
+      - "traefik.http.routers.django.middlewares=csrf"
 
   # redis:
   #   image: redis:5.0
