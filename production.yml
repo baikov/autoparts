@@ -51,6 +51,8 @@ services:
     container_name: parts_redis
     networks:
       - back
+    labels:
+      - traefik.enable=false
 
   celeryworker:
     <<: *django
@@ -62,6 +64,8 @@ services:
     networks:
       - back   
     ports: []
+    labels:
+      - traefik.enable=false
     command: /start-celeryworker
 
   celerybeat:
@@ -74,6 +78,8 @@ services:
     networks:
       - back
     ports: []
+    labels:
+      - traefik.enable=false
     command: /start-celerybeat
 
   flower:
