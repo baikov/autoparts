@@ -30,7 +30,8 @@ services:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
     labels:
-      - traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`)
+      # - traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`)
+      - "traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`) && PathPrefix(`/django`)"
       # - traefik.http.services.flower.loadbalancer.server.port=5000
       - traefik.http.routers.django.tls=true
       - traefik.http.routers.django.tls.certresolver=letsencrypt
