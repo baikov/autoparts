@@ -91,6 +91,8 @@ services:
       - "traefik.http.routers.flower.tls.certresolver=letsencrypt"
     # expose:
     #   - 5555
+    depends_on:
+      - celeryworker
     command: /start-flower
 
 networks:
