@@ -34,7 +34,7 @@ services:
       - traefik.http.routers.django.tls=true
       - traefik.http.routers.django.tls.certresolver=letsencrypt
       - traefik.http.routers.django.priority=20
-      # - "traefik.http.routers.django.entryPoints=web-secure"
+      - traefik.http.routers.django.entryPoints=web-secure
       - traefik.http.routers.django.middlewares=csrf
     depends_on:
       - postgres
@@ -95,6 +95,6 @@ networks:
   front:
     external:
       name: front
-  back:
-    external: false
+  # back:
+  #   external: false
     
