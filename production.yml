@@ -17,6 +17,8 @@ services:
       - ./.envs/.production/.postgres
     networks:
       - back
+    labels:
+      - traefik.enable=false
 
   django: &django
     build:
@@ -33,6 +35,7 @@ services:
       - "traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`)"
       - "traefik.http.routers.django.tls=true"
       - "traefik.http.routers.django.tls.certresolver=letsencrypt"
+      - traefik.port=80
     ports:
       - "8000:8000"
     depends_on:
@@ -86,10 +89,13 @@ services:
       - traefik.http.services.flower.loadbalancer.server.port=5555
       - traefik.http.routers.flower.tls=true
       - traefik.http.routers.flower.tls.certresolver=letsencrypt
+      - traefik.port=5555
     command: /start-flower
 
 networks:
   front:
     external:
       name: front
+  back:
+    external: false
     
