@@ -15,8 +15,8 @@ services:
       - production_postgres_data:/var/lib/postgresql/data:Z
     env_file:
       - ./.envs/.production/.postgres
-    # networks:
-    #   - back
+    networks:
+      - back
     labels:
       - traefik.enable=false
 
@@ -31,17 +31,18 @@ services:
       - ./.envs/.production/.postgres
     labels:
       - traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`)
+      # - traefik.http.services.flower.loadbalancer.server.port=5000
       - traefik.http.routers.django.tls=true
       - traefik.http.routers.django.tls.certresolver=letsencrypt
-      - traefik.http.routers.django.priority=20
+      # - traefik.http.routers.django.priority=20
       - traefik.http.routers.django.entryPoints=web-secure
       - traefik.http.routers.django.middlewares=csrf
     depends_on:
       - postgres
       #- redis
-    # networks:
-    #   - front
-    #   - back
+    networks:
+      - front
+      - back
     command: /start
 
   # redis:
@@ -91,11 +92,11 @@ services:
   #     - "traefik.http.routers.flower.priority=2"
   #   command: /start-flower
 
-# networks:
-#   front:
-#     external:
-#       name: front
-#   back:
-#     external: false
-#       name: back
+networks:
+  front:
+    external:
+      name: front
+  back:
+    external: false
+      name: back
     
