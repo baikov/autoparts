@@ -38,7 +38,6 @@ services:
       - "traefik.http.routers.django.priority=2"
       - "traefik.http.routers.django.entryPoints=web-secure"
       - "traefik.http.routers.django.middlewares=csrf"
-      - traefik.port=80
     ports:
       - "8000:8000"
     depends_on:
@@ -82,8 +81,8 @@ services:
     <<: *django
     image: parts_production_flower
     container_name: flower
-    ports:
-      - "5555:5555"
+    # ports:
+    #   - "5555:5555"
     networks:
       - front
       - back
