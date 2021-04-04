@@ -16,7 +16,8 @@ RUN apt-get update \
 
 RUN addgroup --system django \
     && adduser --system --ingroup django django
-
+WORKDIR /app
+COPY . /app
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
 RUN pip install --no-cache-dir -r /requirements/production.txt \
