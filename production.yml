@@ -38,8 +38,6 @@ services:
       - "traefik.http.routers.django.priority=2"
       - "traefik.http.routers.django.entryPoints=web-secure"
       - "traefik.http.routers.django.middlewares=csrf"
-    ports:
-      - "8000:8000"
     depends_on:
       - postgres
     networks:
