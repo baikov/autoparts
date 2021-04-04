@@ -36,10 +36,11 @@ services:
       - "traefik.http.routers.django.tls=true"
       - "traefik.http.routers.django.tls.certresolver=letsencrypt"
       - "traefik.http.routers.django.priority=2"
-      - "traefik.http.routers.django.entryPoints=web-secure"
+      # - "traefik.http.routers.django.entryPoints=web-secure"
       - "traefik.http.routers.django.middlewares=csrf"
     depends_on:
       - postgres
+      - redis
     networks:
       - front
       - back
@@ -86,7 +87,7 @@ services:
       - back
     labels:
       - traefik.http.routers.flower.rule=Host(`parts.luidorbus.ru`)
-      # - traefik.http.services.flower.loadbalancer.server.port=5555
+      - traefik.http.services.flower.loadbalancer.server.port=5555
       - traefik.http.routers.flower.tls=true
       - traefik.http.routers.flower.tls.certresolver=letsencrypt
       # - "traefik.http.routers.flower.entryPoints=web-secure"
