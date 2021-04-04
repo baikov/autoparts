@@ -29,8 +29,8 @@ services:
     env_file:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
-    volumes:
-      - ./src:/app:z
+    # volumes:
+    #   - ./src:/app:z
     labels:
       - "traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`)"
       - "traefik.http.routers.django.tls=true"
