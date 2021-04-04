@@ -95,6 +95,7 @@ networks:
   front:
     external:
       name: front
-  # back:
-  #   external: false
+  back:
+    external: false
+    name: back
     
