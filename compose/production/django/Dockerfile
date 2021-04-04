@@ -43,7 +43,7 @@ RUN chmod +x /start-celerybeat
 COPY ./compose/production/django/celery/flower/start /start-flower
 RUN sed -i 's/\r$//g' /start-flower
 RUN chmod +x /start-flower
-COPY --from=client-builder --chown=django:django /app /app
+# COPY --from=client-builder --chown=django:django /app /app
 
 
 USER django
