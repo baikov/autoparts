@@ -98,6 +98,5 @@ networks:
     external:
       name: front
   back:
-    external: false
-      name: back
+    name: back
     
