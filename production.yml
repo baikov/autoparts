@@ -35,7 +35,7 @@ services:
       - "traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`)"
       - "traefik.http.routers.django.tls=true"
       - "traefik.http.routers.django.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.django.priority=2"
+      - "traefik.http.routers.django.priority=20"
       # - "traefik.http.routers.django.entryPoints=web-secure"
       - "traefik.http.routers.django.middlewares=csrf"
     depends_on:
@@ -91,8 +91,8 @@ services:
       - traefik.http.routers.flower.tls=true
       - traefik.http.routers.flower.tls.certresolver=letsencrypt
       # - "traefik.http.routers.flower.entryPoints=web-secure"
-      - traefik.port=5555
-      - "traefik.http.routers.flower.priority=20"
+      # - traefik.port=5555
+      - "traefik.http.routers.flower.priority=2"
     command: /start-flower
 
 networks:
