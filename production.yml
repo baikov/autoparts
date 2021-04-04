@@ -81,7 +81,7 @@ services:
     networks:
       - front
       - back
-    labels:
+    # labels:
       # - traefik.http.routers.flower.rule=Host(`parts.luidorbus.ru`)
       # - traefik.http.services.flower.loadbalancer.server.port=5555
       # - traefik.http.routers.flower.tls=true
