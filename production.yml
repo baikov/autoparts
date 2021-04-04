@@ -25,7 +25,7 @@ services:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
     image: parts_production_django
-    container_name: parts_django
+    container_name: django
     env_file:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
