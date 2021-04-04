@@ -29,8 +29,6 @@ services:
     env_file:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
-    # volumes:
-    #   - ./src:/app:z
     labels:
       - "traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`)"
       - "traefik.http.routers.django.tls=true"
@@ -84,13 +82,13 @@ services:
       - front
       - back
     labels:
-      - traefik.http.routers.flower.rule=Host(`parts.luidorbus.ru`)
-      - traefik.http.services.flower.loadbalancer.server.port=5555
-      - traefik.http.routers.flower.tls=true
-      - traefik.http.routers.flower.tls.certresolver=letsencrypt
-      - "traefik.http.routers.flower.entryPoints=flower"
+      # - traefik.http.routers.flower.rule=Host(`parts.luidorbus.ru`)
+      # - traefik.http.services.flower.loadbalancer.server.port=5555
+      # - traefik.http.routers.flower.tls=true
+      # - traefik.http.routers.flower.tls.certresolver=letsencrypt
+      # - "traefik.http.routers.flower.entryPoints=flower"
       # - traefik.port=5555
-      - "traefik.http.routers.flower.priority=2"
+      # - "traefik.http.routers.flower.priority=2"
     command: /start-flower
 
 networks:
