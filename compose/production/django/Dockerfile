@@ -1,4 +1,3 @@
-# Python build stage
 FROM python:3.8-slim-buster
 
 ENV PYTHONUNBUFFERED 1
@@ -16,8 +15,6 @@ RUN apt-get update \
 
 RUN addgroup --system django \
     && adduser --system --ingroup django django
-WORKDIR /app
-COPY . /app
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
 RUN pip install --no-cache-dir -r /requirements/production.txt \
@@ -44,8 +41,7 @@ RUN chmod +x /start-celerybeat
 COPY ./compose/production/django/celery/flower/start /start-flower
 RUN sed -i 's/\r$//g' /start-flower
 RUN chmod +x /start-flower
-# COPY --from=client-builder --chown=django:django /app /app
-COPY --chown=django:django /app /app
+COPY --chown=django:django . /app
 
 
 USER django
