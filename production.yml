@@ -17,10 +17,10 @@ services:
       - ./.envs/.production/.postgres
     networks:
       - back
-    labels:
-      - traefik.enable=false
+    # labels:
+    #   - traefik.enable=false
 
-  django: &django
+  django: #&django
     build:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
@@ -38,58 +38,58 @@ services:
       - traefik.http.routers.django.middlewares=csrf
     depends_on:
       - postgres
-      - redis
+      #- redis
     networks:
       - front
       - back
     command: /start
 
-  redis:
-    image: redis:5.0
-    container_name: parts_redis
-    networks:
-      - back
+  # redis:
+  #   image: redis:5.0
+  #   container_name: parts_redis
+  #   networks:
+  #     - back
 
-  celeryworker:
-    <<: *django
-    image: parts_production_celeryworker
-    container_name: celeryworker
-    depends_on:
-      - redis
-      - postgres
-    networks:
-      - back   
-    ports: []
-    command: /start-celeryworker
+  # celeryworker:
+  #   <<: *django
+  #   image: parts_production_celeryworker
+  #   container_name: celeryworker
+  #   depends_on:
+  #     - redis
+  #     - postgres
+  #   networks:
+  #     - back   
+  #   ports: []
+  #   command: /start-celeryworker
 
-  celerybeat:
-    <<: *django
-    image: parts_production_celerybeat
-    container_name: celerybeat
-    depends_on:
-      - redis
-      - postgres
-    networks:
-      - back
-    ports: []
-    command: /start-celerybeat
+  # celerybeat:
+  #   <<: *django
+  #   image: parts_production_celerybeat
+  #   container_name: celerybeat
+  #   depends_on:
+  #     - redis
+  #     - postgres
+  #   networks:
+  #     - back
+  #   ports: []
+  #   command: /start-celerybeat
 
-  flower:
-    <<: *django
-    image: parts_production_flower
-    container_name: flower
-    networks:
-      - front
-      - back
-    # labels:
-      # - traefik.http.routers.flower.rule=Host(`parts.luidorbus.ru`)
-      # - traefik.http.services.flower.loadbalancer.server.port=5555
-      # - traefik.http.routers.flower.tls=true
-      # - traefik.http.routers.flower.tls.certresolver=letsencrypt
-      # - "traefik.http.routers.flower.entryPoints=flower"
-      # - traefik.port=5555
-      # - "traefik.http.routers.flower.priority=2"
-    command: /start-flower
+  # flower:
+  #   <<: *django
+  #   image: parts_production_flower
+  #   container_name: flower
+  #   networks:
+  #     - front
+  #     - back
+  #   labels:
+  #     - traefik.http.routers.flower.rule=Host(`parts.luidorbus.ru`)
+  #     - traefik.http.services.flower.loadbalancer.server.port=5555
+  #     - traefik.http.routers.flower.tls=true
+  #     - traefik.http.routers.flower.tls.certresolver=letsencrypt
+  #     - "traefik.http.routers.flower.entryPoints=flower"
+  #     - traefik.port=5555
+  #     - "traefik.http.routers.flower.priority=2"
+  #   command: /start-flower
 
 networks:
   front:
