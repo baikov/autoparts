@@ -1,0 +1,108 @@
+version: "3.9"
+
+volumes:
+  production_postgres_data: {}
+  production_postgres_data_backups: {}
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: parts_postgres
+    container_name: parts_postgres
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data:Z
+    env_file:
+      - ./.envs/.production/.postgres
+    networks:
+      - back
+    labels:
+      - traefik.enable=false
+
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/production/django/Dockerfile
+    image: parts_production_django
+    container_name: django
+    env_file:
+      - ./.envs/.production/.django
+      - ./.envs/.production/.postgres
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - front
+      - back
+    command: /start
+    expose:
+      - 5000
+    labels:
+      - "traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`)"
+      - "traefik.http.routers.django.tls=true"
+      - "traefik.http.routers.django.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.django.entryPoints=web-secure"
+      - "traefik.http.routers.django.middlewares=csrf"
+      - "traefik.http.services.django.loadbalancer.server.url=http://django:5000"
+
+  redis:
+    image: redis:5.0
+    container_name: parts_redis
+    networks:
+      - back
+    labels:
+      - traefik.enable=false
+
+  celeryworker:
+    <<: *django
+    image: parts_production_celeryworker
+    container_name: celeryworker
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - back   
+    ports: []
+    labels:
+      - traefik.enable=false
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    image: parts_production_celerybeat
+    container_name: celerybeat
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - back
+    ports: []
+    labels:
+      - traefik.enable=false
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    image: parts_production_flower
+    container_name: flower
+    networks:
+      - front
+      - back
+    labels:
+      - "traefik.http.routers.flower.rule=Host(`parts.luidorbus.ru`)"
+      - "traefik.http.routers.flower.entryPoints=parts-flower"
+      - "traefik.http.services.flower.loadbalancer.server.url=http://flower:5555"
+      - "traefik.http.routers.flower.tls=true"
+      - "traefik.http.routers.flower.tls.certresolver=letsencrypt"
+    expose:
+      - 5555
+    command: /start-flower
+
+networks:
+  front:
+    external:
+      name: front
+  back:
+    name: back
+    

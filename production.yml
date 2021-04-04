@@ -1,110 +1,78 @@
-version: "3.9"
+version: '3.7'
 
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
+  production_traefik: {}
+  # production_django_media: {}
 
 services:
-  postgres:
-    build:
-      context: .
-      dockerfile: ./compose/production/postgres/Dockerfile
-    image: parts_postgres
-    container_name: parts_postgres
-    volumes:
-      - production_postgres_data:/var/lib/postgresql/data:Z
-    env_file:
-      - ./.envs/.production/.postgres
-    networks:
-      - back
-    labels:
-      - traefik.enable=false
-
   django: &django
     build:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
     image: parts_production_django
-    container_name: django
+    # volumes:
+    #   - production_django_media:/app/flags/media
+      # - ./flags/media:/app/flags/media
+    depends_on:
+      - postgres
+      - redis
     env_file:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
-    depends_on:
-      - postgres
-      - redis
-    networks:
-      - front
-      - back
     command: /start
-    expose:
-      - 5000
-    labels:
-      - "traefik.http.routers.django.rule=Host(`parts.luidorbus.ru`)"
-      - "traefik.http.routers.django.tls=true"
-      - "traefik.http.routers.django.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.django.entryPoints=web-secure"
-      - "traefik.http.routers.django.middlewares=csrf"
-      - "traefik.http.services.django.loadbalancer.server.url=http://django:5000"
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: parts_production_postgres
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data:Z
+      - production_postgres_data_backups:/backups:z
+    env_file:
+      - ./.envs/.production/.postgres
+
+  traefik:
+    build:
+      context: .
+      dockerfile: ./compose/production/traefik/Dockerfile
+    image: production_traefik
+    depends_on:
+      - django
+    volumes:
+      - production_traefik:/etc/traefik/acme:z
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+      - "0.0.0.0:5555:5555"
 
   redis:
     image: redis:5.0
-    container_name: parts_redis
-    networks:
-      - back
-    labels:
-      - traefik.enable=false
 
   celeryworker:
     <<: *django
-    image: parts_production_celeryworker
-    container_name: celeryworker
-    depends_on:
-      - redis
-      - postgres
-    networks:
-      - back   
-    ports: []
-    labels:
-      - traefik.enable=false
+    image: flags_production_celeryworker
     command: /start-celeryworker
 
   celerybeat:
     <<: *django
-    image: parts_production_celerybeat
-    container_name: celerybeat
-    depends_on:
-      - redis
-      - postgres
-    networks:
-      - back
-    ports: []
-    labels:
-      - traefik.enable=false
+    image: flags_production_celerybeat
     command: /start-celerybeat
 
   flower:
     <<: *django
-    image: parts_production_flower
-    container_name: flower
-    networks:
-      - front
-      - back
-    labels:
-      - "traefik.http.routers.flower.rule=Host(`parts.luidorbus.ru`)"
-      - "traefik.http.routers.flower.entryPoints=parts-flower"
-      - "traefik.http.services.flower.loadbalancer.server.url=http://flower:5555"
-      - "traefik.http.routers.flower.tls=true"
-      - "traefik.http.routers.flower.tls.certresolver=letsencrypt"
-    expose:
-      - 5555
-    depends_on:
-      - celeryworker
+    image: flags_production_flower
     command: /start-flower
 
-networks:
-  front:
-    external:
-      name: front
-  back:
-    name: back
-    
+  # nginx:
+  #   build:
+  #     context: .
+  #     dockerfile: ./compose/production/nginx/Dockerfile
+  #   image: flags_production_nginx
+  #   depends_on:
+  #     - django
+  #   volumes:
+  #     - production_django_media:/usr/share/nginx/media:ro
+  #     # - ./flags/media:/usr/share/nginx/media

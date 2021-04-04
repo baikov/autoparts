@@ -1,0 +1,111 @@
+log:
+  level: INFO
+accessLog: {}
+api:
+  dashboard: true
+  # insecure: true
+
+entryPoints:
+  web:
+    # http
+    address: ":80"
+    http:
+      # https://docs.traefik.io/routing/entrypoints/#entrypoint
+      redirections:
+        entryPoint:
+          to: web-secure
+
+  web-secure:
+    # https
+    address: ":443"
+
+  flower:
+    address: ":5555"
+
+certificatesResolvers:
+  letsencrypt:
+    # https://docs.traefik.io/master/https/acme/#lets-encrypt
+    acme:
+      email: "baikov52@gmail.com"
+      storage: /etc/traefik/acme/acme.json
+      # https://docs.traefik.io/master/https/acme/#httpchallenge
+      httpChallenge:
+        entryPoint: web
+
+http:
+  routers:
+    dashboard:
+      rule: "Host(`parts.luidorbus.ru`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      service: api@internal
+      middlewares:
+        - csrf
+        - auth
+      tls:
+        certResolver: letsencrypt
+
+    # media:
+    #   rule: "Host(`parts.luidorbus.ru`) && PathPrefix(`/media`)"
+    #   entryPoints:
+    #     - web
+    #     - web-secure
+    #     # - media
+    #   priority: 10
+    #   middlewares:
+    #     - csrf
+    #   service: media
+    #   tls:
+    #     certResolver: letsencrypt
+
+    web-secure-router:
+      rule: "Host(`parts.luidorbus.ru`)"
+      
+      entryPoints:
+        - web-secure
+      priority: 2
+      middlewares:
+        - csrf
+      service: django
+      tls:
+        # https://docs.traefik.io/master/routing/routers/#certresolver
+        certResolver: letsencrypt
+
+    flower-secure-router:
+      rule: "Host(`parts.luidorbus.ru`)"
+      entryPoints:
+        - flower
+      service: flower
+      tls:
+        certResolver: letsencrypt
+
+  middlewares:
+    csrf:
+      headers:
+        hostsProxyHeaders: ["X-CSRFToken"]
+    
+    auth:
+      basicAuth:
+        users:
+          - "test:$apr1$IwjHZbRe$gXhMdI3EYhW2Npt7F6Jjs1"
+          - "test2:$apr1$d9hr9HBB$4HxwgUir3HP4EsggP/QNo0"
+
+  services:
+    django:
+      loadBalancer:
+        servers:
+          - url: http://django:5000
+
+    # media:
+    #   loadBalancer:
+    #     servers:
+    #       - url: http://nginx:80
+
+    flower:
+      loadBalancer:
+        servers:
+          - url: http://flower:5555
+
+providers:
+  # https://docs.traefik.io/master/providers/file/
+  file:
+    filename: /etc/traefik/traefik.yml
+    watch: true
