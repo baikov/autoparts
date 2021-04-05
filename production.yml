@@ -93,6 +93,7 @@ services:
       - "traefik.http.routers.flower.rule=Host(`parts.luidorbus.ru`) && PathPrefix(`/flower`)"
       - "traefik.http.routers.flower.entryPoints=web-secure"
       - "traefik.http.services.flower.loadbalancer.server.port=5555"
+      - "traefik.http.routers.flower.middlewares=csrf"
       - "traefik.http.routers.flower.tls=true"
       - "traefik.http.routers.flower.tls.certresolver=letsencrypt"
     expose:
