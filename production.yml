@@ -91,7 +91,7 @@ services:
       - back
     labels:
       - "traefik.http.routers.flower.rule=Host(`parts.luidorbus.ru`) && PathPrefix(`/flower`)"
-      - "traefik.http.routers.flower.entryPoints=parts-web-secure"
+      - "traefik.http.routers.flower.entryPoints=web-secure"
       - "traefik.http.services.flower.loadbalancer.server.url=http://flower:5555"
       - "traefik.http.routers.flower.tls=true"
       - "traefik.http.routers.flower.tls.certresolver=letsencrypt"
