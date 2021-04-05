@@ -70,12 +70,13 @@ http:
         certResolver: letsencrypt
 
     flower-secure-router:
-      rule: "Host(`parts.luidorbus.ru`)"
+      rule: "Host(`parts.luidorbus.ru`) && PathPrefix(`/flower`)"
       entryPoints:
-        - flower
+        - web-secure
       middlewares:
         - csrf
       service: flower
+      priority: 20
       tls:
         certResolver: letsencrypt
 
