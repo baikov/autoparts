@@ -73,8 +73,9 @@ http:
       rule: "Host(`parts.luidorbus.ru`) && PathPrefix(`/flower`)"
       entryPoints:
         - web-secure
-      middlewares:
-        - csrf
+        - web
+      # middlewares:
+      #   - csrf
       service: flower
       priority: 20
       tls:
