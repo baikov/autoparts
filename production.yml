@@ -43,6 +43,7 @@ services:
       - "traefik.http.routers.django.tls=true"
       - "traefik.http.routers.django.tls.certresolver=letsencrypt"
       - "traefik.http.routers.django.entryPoints=web-secure"
+      - "traefik.http.routers.django.priority=10"
       - "traefik.http.routers.django.middlewares=csrf"
       - "traefik.http.services.django.loadbalancer.server.port=5000"
 
@@ -95,6 +96,7 @@ services:
       - "traefik.http.services.flower.loadbalancer.server.port=5555"
       - "traefik.http.routers.flower.middlewares=csrf"
       - "traefik.http.routers.flower.tls=true"
+      - "traefik.http.routers.flower.priority=20"
       - "traefik.http.routers.flower.tls.certresolver=letsencrypt"
     expose:
       - 5555
