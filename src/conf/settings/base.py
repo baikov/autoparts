@@ -76,6 +76,7 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "django_celery_beat",
+    "celery_progress",
 ]
 
 LOCAL_APPS = [
@@ -297,3 +298,4 @@ SOCIALACCOUNT_ADAPTER = "users.adapters.SocialAccountAdapter"
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
