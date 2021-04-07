@@ -69,3 +69,4 @@ celerybeat.pid
 .envs/
 .venv
 envparts/
+.ipython/
