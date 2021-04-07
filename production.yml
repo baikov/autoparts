@@ -3,6 +3,9 @@ version: "3.9"
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
+  parts_media: 
+    name: parts_media
+    external: true
 
 services:
   postgres:
@@ -47,6 +50,8 @@ services:
       - "traefik.http.routers.django.middlewares=csrf"
       - "traefik.docker.network=front"
       - "traefik.http.services.django.loadbalancer.server.port=5000"
+    volumes:
+      - parts_media:/app/flags/media
 
   redis:
     image: redis:5.0
