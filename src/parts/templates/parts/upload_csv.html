@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block seo_title %}CSV upload{% endblock seo_title %}
+{% block content %}
+<div class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 m-auto">
+                <div class="card p-3">
+                    <form method="post" action="{% url 'import' %}" enctype="multipart/form-data" class="form-inline">
+                        {% csrf_token %}
+                        {{form}}
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>
+                </div>
+
+                {% if saved_file %}
+                <div class="p-3 my-3 alert alert-success" role="alert">
+                    Загруженный файл {{uploaded_file}} сохранен под именем {{saved_file}}
+                </div>
+                {% endif %}
+
+                <!--
+                <div class="card my-3 p-3">
+                    <form method="GET" action="{% url 'import' %}">
+                        <ul>
+                            {% for name in files_name %}
+                                <li>
+                                {{name}} 
+                                <a href="{% url 'import' %}.?file={{name}}&show=yes" name="file_name">Show</a>
+                                <a href="{% url 'import' %}.?file={{name}}&import=yes" name="file_name">Import</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </form>
+                </div>
+                -->
+                
+                <table class="table table-hover table-sm table-bordered my-3">
+                    {% for name in files_name %}
+                    <tr>
+                        <td class="text-center align-middle">{{forloop.counter}}</td>
+                        <td class="align-middle">{{name}}</td>
+                        <td style="width:24px;">
+                            <a href="{% url 'import' %}.?file={{name}}&show=yes" class="btn btn-primary btn-sm" role="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                                </svg>
+                            </a>
+                        </td>
+                        <td style="width:24px;">
+                            <a href="{% url 'import' %}.?file={{name}}&import=yes" class="btn btn-success btn-sm" role="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-down-fill" viewBox="0 0 16 16">
+                                    <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zm-1 4v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 11.293V7.5a.5.5 0 0 1 1 0z"/>
+                                </svg>
+                            </a>
+                        </td>
+                        <td style="width:24px;">
+                            <a href="{% url 'import' %}.?file={{name}}&remove=yes" class="btn btn-danger btn-sm" role="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-x-fill" viewBox="0 0 16 16">
+                                    <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM6.854 7.146 8 8.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 9l1.147 1.146a.5.5 0 0 1-.708.708L8 9.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 9 6.146 7.854a.5.5 0 1 1 .708-.708z"/>
+                                </svg>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                {% if message %}
+                <div class="p-3 my-3 alert {% if message.status %}alert-success{% else %}alert-danger{% endif %}" role="alert">
+                    {{message.text}}
+                </div>
+                {% endif %}
+
+                {% if task %}
+                {{task.id}} - {{task.status}}
+                {% endif %}
+                
+
+                <div class='progress-wrapper'>
+                    <div id='progress-bar' class='progress-bar' style="background-color: #68a9ef; width: 0%;">&nbsp;</div>
+                </div>
+                <div id="celery-result"></div>
+                <div id="progress-bar-message">Прогресс импорта из файла</div>
+
+                {% if file %}
+                <div class="card p-3 my-3">
+                    <h4 class="text-center">{{file}}</h4>
+                    <p class="text-center">В файле {{parts_in_file}} строк</p>
+                </div>
+                {% endif %}
+
+                <table class="table table-striped table-hover table-sm table-bordered">
+                    {% for row in data %}
+                    <tr>
+                        {% for field in row %}
+                        <td>
+                            {{field}}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+
+            </div>
+        </div>
+    </div> 
+</div>
+{% if task_id %}
+<script>
+$(function () {
+  var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
+  CeleryProgressBar.initProgressBar(progressUrl)
+});
+</script>
+{% endif %}
+
+{% endblock %}
