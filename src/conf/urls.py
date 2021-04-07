@@ -18,10 +18,10 @@ urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
     # path("users/", include("users.urls", namespace="users")),
-    # path("accounts/", include("allauth.urls")),
+    path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
     # path('robots.txt', TemplateView.as_view(template_name="robots.txt", content_type='text/plain')),
-    path('api/', include('parts.urls')),
+    path('', include('parts.urls')),
     path('api-auth/', include('rest_framework.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
