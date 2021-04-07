@@ -1,7 +1,10 @@
 from django.urls import path
-from . import views
+from django.urls.conf import include
+
+from .views import PartViewset, upload_csv
 
 urlpatterns = [
-    path('parts/', views.PartViewset.as_view()),
-    # path('import/', views.upload_csv_from_form, name='csv_import'),
+    path('api/parts/', PartViewset.as_view(), name='api-parts'),
+    path('import/', upload_csv, name='import'),
+    path('celery_progress/', include('celery_progress.urls')),
 ]
