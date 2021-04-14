@@ -218,12 +218,6 @@ SECURE_BROWSER_XSS_FILTER = True
 # X_FRAME_OPTIONS = "DENY"
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-#CORS_ORIGIN_ALLOW_ALL = True # If this is used then `CORS_ORIGIN_WHITELIST` will not have any effect
-CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = {
-    'https://luidorbus.ru',
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.BasicAuthentication',
