@@ -32,7 +32,8 @@ def get_data_from_csv(filename, delimiter=';'):
     reader = csv.reader(f, delimiter=delimiter)
     # next(reader)
     for row in reader:
-        data.append(row)
+        if row[0] and row[1] and row[2]:
+            data.append(tuple(row))
     f.close()
 
     return data
