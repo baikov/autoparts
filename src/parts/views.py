@@ -12,7 +12,7 @@ from django.views import View
 from django.http import JsonResponse
 from utils.parts_import import handle_uploaded_csv_file, get_data_from_csv, take_files_form_csv_folder, file_remove
 from celery import current_app
-from parts.tasks import import_parts, go_to_sleep, import_parts_new, compare_data
+from parts.tasks import compare_data, import_parts
 
 class SmallPagesPagination(PageNumberPagination):
     page_size = 40
@@ -75,7 +75,7 @@ def upload_csv(request):
 
         if filename_from_get and action == 'import':
             # result = import_parts.delay(filename_from_get)
-            result = import_parts_new.delay(filename_from_get)
+            result = import_parts.delay(filename_from_get)
             task_id = result.task_id
 
         if filename_from_get and action == 'remove':

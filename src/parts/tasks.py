@@ -8,7 +8,7 @@ from utils.parts_import import get_data_from_csv
 # from time import sleep
 
 @shared_task(bind=True, soft_time_limit=100, time_limit=120)
-def import_parts_new(self, filename):
+def import_parts(self, filename):
     '''
     Create part instances from local csv file with bulk_create
     '''
