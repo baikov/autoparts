@@ -12,7 +12,7 @@ from django.views import View
 from django.http import JsonResponse
 from utils.parts_import import handle_uploaded_csv_file, get_data_from_csv, take_files_form_csv_folder, file_remove
 from celery import current_app
-from parts.tasks import import_parts, go_to_sleep
+from parts.tasks import import_parts, go_to_sleep, import_parts_new, compare_data
 
 class SmallPagesPagination(PageNumberPagination):
     page_size = 40
@@ -41,9 +41,10 @@ class PartViewset(ListAPIView):
 def upload_csv(request):
     # template = 'parts/progress.html'
     template = 'parts/upload_csv.html'
-    parts_in_file = ''
+    parts = Part.objects.all()
     task_id = ''
     message = ''
+    info = ''
     data = []
     context = {}
 
@@ -59,27 +60,32 @@ def upload_csv(request):
             message = 'Not valid file!'
     else:
         filename_from_get = request.GET.get('file')
-        is_import = request.GET.get('import')
-        is_show = request.GET.get('show')
-        is_remove = request.GET.get('remove')
+        action = request.GET.get('action')
 
-        if filename_from_get and is_show == 'yes':
+        if action == 'cleardb':
+            parts.delete()
+
+        if filename_from_get and action == 'show':
             data = get_data_from_csv(filename_from_get)
-            parts_in_file = len(data)
+            info = f'В файле {len(data)} строки'
 
-        if filename_from_get and is_import == 'yes':
-            # task = import_parts.delay(filename_from_get)
-            # message = {'status': 1, 'text': "import is ok"}
-            result = import_parts.delay(filename_from_get)
+        if filename_from_get and action == 'compare':
+            data = compare_data(filename_from_get)
+            info = f'В файле {len(data)} новых позиции'
+
+        if filename_from_get and action == 'import':
+            # result = import_parts.delay(filename_from_get)
+            result = import_parts_new.delay(filename_from_get)
             task_id = result.task_id
 
-        if filename_from_get and is_remove == 'yes':
+        if filename_from_get and action == 'remove':
             message = file_remove(filename_from_get)
 
         form = UploadCSVFileForm()
-        context = {'file': filename_from_get, 'form': form, 'message': message, 'data': data[:20], 'task_id': task_id, 'parts_in_file': parts_in_file}
+        context = {'file': filename_from_get, 'form': form, 'message': message, 'data': data[:20], 'task_id': task_id, 'info': info}
 
     context['files_name'] = take_files_form_csv_folder()
+    context['parts_count'] = len(parts)
     return render(request, template, context)
 
 
