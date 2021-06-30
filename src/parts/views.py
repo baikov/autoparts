@@ -21,7 +21,7 @@ class SmallPagesPagination(PageNumberPagination):
 class PartViewset(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = PartSerializer
-    pagination_class = SmallPagesPagination
+    # pagination_class = SmallPagesPagination
 
     def get_queryset(self):
         vin = self.request.query_params.get('vin', None)
